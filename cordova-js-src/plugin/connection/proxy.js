@@ -16,42 +16,71 @@
 
 var Connection = require('cordova/plugin/Connection');
 
+var WebosActiveConnectionType = {
+    WIRED : "wired",
+    WIFI : "wifi",
+    NONE : "none",
+    UNKNOWN : "unknown"
+};
+
+var WebosConnectionState = {
+    OFFLINE : "disconnected",
+    ONLINE : "connected",
+};
+
 module.exports = {
     getConnectionInfo: function(successCallback, errorCallback) {
         var networkType = Connection.NONE;
 
-        window.addEventListener('online', function (e) {
-            checkNetworkType();
+        try {
+            subscribeNetworkType();
 
-            if(navigator.connection) {
-                navigator.connection.type = networkType;
+            setTimeout(function() {
+                successCallback(networkType);
+            }, 0);
+        }
+        catch (e) {
+            setTimeout(function() {
+                errorCallback(e);
+            }, 0);
+        }
+
+        function parseNetworkState(data) {
+            if(data.wired.state == WebosConnectionState.ONLINE){
+                return WebosActiveConnectionType.WIRED;
+            } else if (data.wifi.state == WebosConnectionState.ONLINE){
+                return WebosActiveConnectionType.WIFI;
+            } else if((data.wan.state == WebosConnectionState.ONLINE) || (data.wifiDirect.state == WebosConnectionState.ONLINE)) {
+                return WebosActiveConnectionType.UNKNOWN;
             }
-        });
-        window.addEventListener('offline', function (e) {
-            networkType = Connection.NONE;
+            return WebosActiveConnectionType.NONE;
+        }
 
-            if(navigator.connection) {
-                navigator.connection.type = networkType;
-            }
-        });
-
-        getActiveConnectionType(successCallback, errorCallback);
-
-        function checkNetworkType() {
+        function subscribeNetworkType() {
+            // Not supported on emulator.
+            /*jshint undef: false */
             webOS.service.request("luna://com.webos.service.connectionmanager", {
-                method: "getStatus",
+            method: "getStatus",
+            parameters: { "subscribe": true },
                 onSuccess: function (data) {
+                    if (typeof(data.subscribed) != 'undefined') {
+                        if (!data.subscribed) {
+                            console.log("Failed to subscribe network state");
+                            return;
+                        }
+                    }
+             
                     var activeType = parseNetworkState(data);
                     switch(activeType) {
-                    case "NONE":
+                    case WebosActiveConnectionType.NONE:
                         console.log('network disconnected');
                         networkType = Connection.NONE;
                         break;
-                    case "WIFI":
+                    case WebosActiveConnectionType.WIFI:
                         console.log('connection network type is Wifi');
                         networkType = Connection.WIFI;
                         break;
-                    case "ETHERNET":
+                    case WebosActiveConnectionType.WIRED:
                         console.log('connection network type is Ethernet');
                         networkType = Connection.ETHERNET;
                         break;
@@ -61,52 +90,12 @@ module.exports = {
                         break;
                     }
                 },
-                onFailure: function (error) {
+                onFailure: function (inError) {
                     console.log("Failed to get network state");
-                    console.log("[" + error.errorCode + "]: " + error.errorText);
-                    // throw error;
+                    console.log("[" + inError.errorCode + "]: " + inError.errorText);
                     return;
                 }
             });
-        }
-
-        function parseNetworkState(data) {
-            if(data.wired.state == "connected"){
-                return "ETHERNET";
-            } else if (data.wifi.state == "connected"){
-                return "WIFI";
-            } else if((data.wan.state == "connected") || (data.wifiDirect.state == "connected")) {
-                return "UNKNOWN";
-            } else{
-                "NONE";
-            }
-
-            if(!data.isInternetConnectionAvailable){
-                return "NONE";
-            }
-
-            return "NONE";
-        }
-
-        function getActiveConnectionType(successCB, errorCB) {
-            try {
-                checkNetworkType();
-                setTimeout(function() {
-                    if(navigator.connection) {
-                        navigator.connection.type = networkType;
-                    }
-                    successCB(networkType);
-                }, 0);
-            }
-            catch (e) {
-                networkType = Connection.NONE;
-                setTimeout(function() {
-                    if(navigator.connection) {
-                        navigator.connection.type = networkType;
-                    }
-                    successCB(networkType);
-                }, 0);
-            }
         }
     }
 };
