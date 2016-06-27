@@ -28,38 +28,26 @@ var WebosConnectionState = {
     ONLINE : "connected",
 };
 
+function parseNetworkState(data) {
+    if(data.wired.state == WebosConnectionState.ONLINE){
+        return WebosActiveConnectionType.WIRED;
+    } else if (data.wifi.state == WebosConnectionState.ONLINE){
+        return WebosActiveConnectionType.WIFI;
+    } else if((data.wan.state == WebosConnectionState.ONLINE) || (data.wifiDirect.state == WebosConnectionState.ONLINE)) {
+        return WebosActiveConnectionType.UNKNOWN;
+    }
+    return WebosActiveConnectionType.NONE;
+}
+
 module.exports = {
     getConnectionInfo: function(successCallback, errorCallback) {
         var networkType = Connection.NONE;
 
         try {
-            subscribeNetworkType();
-
-            setTimeout(function() {
-                successCallback(networkType);
-            }, 0);
-        }
-        catch (e) {
-            setTimeout(function() {
-                errorCallback(e);
-            }, 0);
-        }
-
-        function parseNetworkState(data) {
-            if(data.wired.state == WebosConnectionState.ONLINE){
-                return WebosActiveConnectionType.WIRED;
-            } else if (data.wifi.state == WebosConnectionState.ONLINE){
-                return WebosActiveConnectionType.WIFI;
-            } else if((data.wan.state == WebosConnectionState.ONLINE) || (data.wifiDirect.state == WebosConnectionState.ONLINE)) {
-                return WebosActiveConnectionType.UNKNOWN;
-            }
-            return WebosActiveConnectionType.NONE;
-        }
-
-        function subscribeNetworkType() {
             // Not supported on emulator.
             /*jshint undef: false */
-            webOS.service.request("luna://com.webos.service.connectionmanager", {
+            // webOS.service.request("luna://com.webos.service.connectionmanager", {
+            webOS.service.request("luna://com.palm.connectionmanager", {
             method: "getStatus",
             parameters: { "subscribe": true },
                 onSuccess: function (data) {
@@ -89,6 +77,10 @@ module.exports = {
                         networkType = Connection.UNKNOWN;
                         break;
                     }
+
+                    setTimeout(function() {
+                        successCallback(networkType);
+                    }, 0);
                 },
                 onFailure: function (inError) {
                     console.log("Failed to get network state");
@@ -96,6 +88,11 @@ module.exports = {
                     return;
                 }
             });
+        }
+        catch (e) {
+            setTimeout(function() {
+                errorCallback(e);
+            }, 0);
         }
     }
 };
