@@ -46,7 +46,6 @@ module.exports = {
         try {
             // Not supported on emulator.
             /*jshint undef: false */
-            // webOS.service.request("luna://com.webos.service.connectionmanager", {
             webOS.service.request("luna://com.palm.connectionmanager", {
             method: "getStatus",
             parameters: { "subscribe": true },
