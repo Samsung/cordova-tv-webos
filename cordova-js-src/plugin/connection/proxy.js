@@ -44,7 +44,6 @@ module.exports = {
         var networkType = Connection.NONE;
 
         try {
-            // Not supported on emulator.
             /*jshint undef: false */
             webOS.service.request("luna://com.palm.connectionmanager", {
             method: "getStatus",
@@ -81,9 +80,8 @@ module.exports = {
                         successCallback(networkType);
                     }, 0);
                 },
-                onFailure: function (inError) {
-                    console.log("Failed to get network state");
-                    console.log("[" + inError.errorCode + "]: " + inError.errorText);
+                onFailure: function (e) {
+                    throw e;
                     return;
                 }
             });

@@ -41,6 +41,7 @@ module.exports = {
         script.src = 'webOSjs-0.1.0/webOS.js';
         script.onload = function() {
             channel.onNativeReady.fire();
+            require('cordova/plugin/ime-via-input');
         };
         head.appendChild(script);
 
