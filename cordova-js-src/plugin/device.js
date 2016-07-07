@@ -43,6 +43,7 @@ function Device() {
     this.cordova = null;
     this.model = null;
     this.manufacturer = null;
+    this.receivedData = {};
 
     var me = this;
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+ 
 module.exports = {
     id: 'tv-webos',
     cordovaVersion: '3.4.0',
@@ -42,6 +42,15 @@ module.exports = {
         script.onload = function() {
             channel.onNativeReady.fire();
             require('cordova/plugin/ime-via-input');
+
+            document.addEventListener('webOSLaunch', function(inData) {
+                window.device.receivedData = inData;
+            }, true);
+
+            document.addEventListener('webOSRelaunch', function(inData) {
+                PalmSystem.activate();
+                window.device.receivedData = inData;
+            }, true);
         };
         head.appendChild(script);
 
