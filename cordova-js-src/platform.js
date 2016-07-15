@@ -49,6 +49,7 @@ module.exports = {
             }, true);
 
             document.addEventListener('webOSRelaunch', function(inData) {
+                /*jshint undef: false */
                 PalmSystem.activate();
                 var data = JSON.stringify(inData.detail);
                 window.localStorage.setItem('requestedappinfodata', data);

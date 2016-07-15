@@ -82,7 +82,6 @@ module.exports = {
                 },
                 onFailure: function (e) {
                     throw e;
-                    return;
                 }
             });
         }
