@@ -44,12 +44,14 @@ module.exports = {
             require('cordova/plugin/ime-via-input');
 
             document.addEventListener('webOSLaunch', function(inData) {
-                window.device.receivedData = inData;
+                var data = JSON.stringify(inData.detail);
+                window.localStorage.setItem('requestedappinfodata', data);
             }, true);
 
             document.addEventListener('webOSRelaunch', function(inData) {
                 PalmSystem.activate();
-                window.device.receivedData = inData;
+                var data = JSON.stringify(inData.detail);
+                window.localStorage.setItem('requestedappinfodata', data);
             }, true);
         };
         head.appendChild(script);
