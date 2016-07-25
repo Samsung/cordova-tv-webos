@@ -49,6 +49,7 @@ module.exports = {
                     modelInfo = inResponse.modelName;
                     firmwareInfo = inResponse.firmwareVersion;
                 }
+
                 setTimeout(function() {
                     success({
                         cordova: webos.cordovaVersion,

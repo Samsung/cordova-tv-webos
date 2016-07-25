@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 module.exports = {
     id: 'tv-webos',
     cordovaVersion: '3.4.0',
@@ -77,7 +77,7 @@ module.exports = {
                 channel.onResume.fire();
             }
         }, false);
-    
+
         window.addEventListener('deviceinfoready', function () {
             channel.onDeviceReady.fire();
         });
