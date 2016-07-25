@@ -49,19 +49,18 @@ module.exports = {
                     modelInfo = inResponse.modelName;
                     firmwareInfo = inResponse.firmwareVersion;
                 }
+                setTimeout(function() {
+                    success({
+                        cordova: webos.cordovaVersion,
+                        platform: 'tv-webos',
+                        model: modelInfo, // 'WEBOS1'
+                        version: firmwareInfo, // '3.00.00'
+                        uuid: duidInfo, // '095f142a-xxxx-ac5d-xxxx-92c8be18xxxx'
+                        manufacturer: 'LG Webos TV'
+                    });
+                }, 0);
             }
         });
-
-        setTimeout(function() {
-            success({
-                cordova: webos.cordovaVersion,
-                platform: 'tv-webos',
-                model: modelInfo, // 'WEBOS1'
-                version: firmwareInfo, // '3.00.00'
-                uuid: duidInfo, // '095f142a-xxxx-ac5d-xxxx-92c8be18xxxx'
-                manufacturer: 'LG Webos TV'
-            });
-        }, 0);
     }
 };
 

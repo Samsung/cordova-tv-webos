@@ -44,12 +44,15 @@ module.exports = {
             require('cordova/plugin/ime-via-input');
 
             document.addEventListener('webOSLaunch', function(inData) {
-                window.device.receivedData = inData;
+                var data = JSON.stringify(inData.detail);
+                window.localStorage.setItem('requestedappinfodata', data);
             }, true);
 
             document.addEventListener('webOSRelaunch', function(inData) {
+                /*jshint undef: false */
                 PalmSystem.activate();
-                window.device.receivedData = inData;
+                var data = JSON.stringify(inData.detail);
+                window.localStorage.setItem('requestedappinfodata', data);
             }, true);
         };
         head.appendChild(script);
@@ -74,8 +77,8 @@ module.exports = {
                 channel.onResume.fire();
             }
         }, false);
-
-        window.addEventListener('load', function () {
+    
+        window.addEventListener('deviceinfoready', function () {
             channel.onDeviceReady.fire();
         });
 
