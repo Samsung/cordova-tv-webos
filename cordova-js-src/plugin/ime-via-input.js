@@ -31,14 +31,6 @@ document.body.addEventListener('keydown', function(e) {
                 elInput.setAttribute('data-ime-show', 'false');
                 elInput.blur();
                 break;
-            case 40: // Cancel
-                elInput = document.activeElement;
-                event.initEvent('cancel', true, true);
-                elInput.dispatchEvent(event);
-                elInput.setAttribute('data-ime-show', 'false');
-                elInput.value = '';
-                elInput.blur();
-                break;
         }
     }
 });
