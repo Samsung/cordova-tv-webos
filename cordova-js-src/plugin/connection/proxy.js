@@ -17,23 +17,25 @@
 var Connection = require('cordova/plugin/Connection');
 
 var WebosActiveConnectionType = {
-    WIRED : "wired",
-    WIFI : "wifi",
-    NONE : "none",
-    UNKNOWN : "unknown"
+    WIRED: 'wired',
+    WIFI: 'wifi',
+    NONE: 'none',
+    UNKNOWN: 'unknown'
 };
 
 var WebosConnectionState = {
-    OFFLINE : "disconnected",
-    ONLINE : "connected",
+    OFFLINE: 'disconnected',
+    ONLINE: 'connected'
 };
 
 function parseNetworkState(data) {
-    if(data.wired.state == WebosConnectionState.ONLINE){
+    if(data.wired.state == WebosConnectionState.ONLINE) {
         return WebosActiveConnectionType.WIRED;
-    } else if (data.wifi.state == WebosConnectionState.ONLINE){
+    }
+    else if (data.wifi.state == WebosConnectionState.ONLINE) {
         return WebosActiveConnectionType.WIFI;
-    } else if((data.wan.state == WebosConnectionState.ONLINE) || (data.wifiDirect.state == WebosConnectionState.ONLINE)) {
+    }
+    else if((data.wan.state == WebosConnectionState.ONLINE) || (data.wifiDirect.state == WebosConnectionState.ONLINE)) {
         return WebosActiveConnectionType.UNKNOWN;
     }
     return WebosActiveConnectionType.NONE;
@@ -45,17 +47,18 @@ module.exports = {
 
         try {
             /*jshint undef: false */
-            webOS.service.request("luna://com.palm.connectionmanager", {
-            method: "getStatus",
-            parameters: { "subscribe": true },
+            webOS.service.request('luna://com.palm.connectionmanager', {
+                method: 'getStatus',
+                parameters: {
+                    'subscribe': true
+                },
                 onSuccess: function (data) {
                     if (typeof(data.subscribed) != 'undefined') {
                         if (!data.subscribed) {
-                            console.log("Failed to subscribe network state");
+                            console.log('Failed to subscribe network state');
                             return;
                         }
                     }
-             
                     var activeType = parseNetworkState(data);
                     switch(activeType) {
                     case WebosActiveConnectionType.NONE:

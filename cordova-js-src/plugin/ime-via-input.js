@@ -22,7 +22,6 @@ document.body.addEventListener('keydown', function(e) {
     if(document.activeElement && document.activeElement.tagName.toUpperCase() === 'INPUT' &&
         (document.activeElement.type === 'text' || document.activeElement.type === 'password')) {
         var event = document.createEvent('Event');
-        console.log("what is keycode : " + e.keyCode);
         switch(e.keyCode) {
             case 13: // Done
                 elInput = document.activeElement;

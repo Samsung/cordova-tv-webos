@@ -18,7 +18,7 @@ var GlobalizationError = require('cordova/plugin/GlobalizationError');
 
 module.exports = {
     getPreferredLanguage: function(success, error) {
-        if(typeof window.navigator.language === "string") {
+        if(typeof window.navigator.language === 'string') {
             success && setTimeout(function () {
                 success({
                     value: window.navigator.language
@@ -35,16 +35,16 @@ module.exports = {
         try {
             // Not supported on emulator.
             /*jshint undef: false */
-            webOS.service.request("luna://com.webos.settingsservice", {
-                method: "getSystemSettings",
-                parameters: { 
-                    "category": "option",
-                    "keys": ["country"]
+            webOS.service.request('luna://com.webos.settingsservice', {
+                method: 'getSystemSettings',
+                parameters: {
+                    'category': 'option',
+                    'keys': ['country']
                 },
                 onSuccess: function (data) {
                     var countryString = data.settings.country;
-                    var countryCode = "other";
-                    if(typeof countryString === "string"){
+                    var countryCode = 'other';
+                    if(typeof countryString === 'string') {
                         countryCode = countryString;
                     }
                     success && setTimeout(function () {
