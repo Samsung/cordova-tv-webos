@@ -46,14 +46,7 @@ module.exports = {
             document.addEventListener('webOSLaunch', function(inData) {
                 var data = JSON.stringify(inData.detail);
                 window.localStorage.setItem('requestedappinfodata', data);
-            }, true);
-
-            document.addEventListener('webOSRelaunch', function(inData) {
-                /*jshint undef: false */
-                PalmSystem.activate();
-                var data = JSON.stringify(inData.detail);
-                window.localStorage.setItem('requestedappinfodata', data);
-            }, true);
+            }, false);
         };
         head.appendChild(script);
 
@@ -72,6 +65,7 @@ module.exports = {
         document.addEventListener(visibilityChange, function() {
             if (document[hidden]) {
                 channel.onPause.fire();
+                window.localStorage.setItem('requestedappinfodata', '');
             }
             else {
                 channel.onResume.fire();
