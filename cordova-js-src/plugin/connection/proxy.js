@@ -41,24 +41,69 @@ function parseNetworkState(data) {
     return WebosActiveConnectionType.NONE;
 }
 
+var isFirstTime = false;
+var networkType = '';
+
+window.addEventListener('online', function (e) {
+    if(isFirstTime === false){
+            e.stopImmediatePropagation();
+            /*jshint undef: false */
+            webOS.service.request('luna://com.palm.connectionmanager', {
+                method: 'getStatus',
+                onSuccess: function (data) {
+                    var activeType = parseNetworkState(data);
+                    switch(activeType) {
+                    case WebosActiveConnectionType.NONE:
+                        console.log('network disconnected');
+                        networkType = Connection.NONE;
+                        break;
+                    case WebosActiveConnectionType.WIFI:
+                        console.log('connection network type is Wifi');
+                        networkType = Connection.WIFI;
+                        break;
+                    case WebosActiveConnectionType.WIRED:
+                        console.log('connection network type is Ethernet');
+                        networkType = Connection.ETHERNET;
+                        break;
+                    default:
+                        console.log('connection network type is Unknown');
+                        networkType = Connection.UNKNOWN;
+                        break;
+                    }
+                    if(navigator.connection) {
+	                    navigator.connection.type = networkType;
+                        isFirstTime = true;
+	                    var networkEvent = document.createEvent('Event');
+	                    networkEvent.initEvent('online', true, true);
+	                    window.dispatchEvent(networkEvent);
+                    }
+                },
+                onFailure: function (e) {
+                    throw e;
+                }
+            });
+    }
+    else {
+        isFirstTime = false;
+    }
+});
+
+window.addEventListener('offline', function () {
+	networkType = Connection.NONE;
+
+	if(navigator.connection) {
+	    navigator.connection.type = networkType;
+	}
+});
+
 module.exports = {
     getConnectionInfo: function(successCallback, errorCallback) {
         var networkType = Connection.NONE;
-
         try {
             /*jshint undef: false */
             webOS.service.request('luna://com.palm.connectionmanager', {
                 method: 'getStatus',
-                parameters: {
-                    'subscribe': true
-                },
                 onSuccess: function (data) {
-                    if (typeof(data.subscribed) != 'undefined') {
-                        if (!data.subscribed) {
-                            console.log('Failed to subscribe network state');
-                            return;
-                        }
-                    }
                     var activeType = parseNetworkState(data);
                     switch(activeType) {
                     case WebosActiveConnectionType.NONE:
