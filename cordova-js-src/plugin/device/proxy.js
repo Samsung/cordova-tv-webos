@@ -23,7 +23,24 @@ module.exports = {
         var firmwareInfo = null;
         var duidInfo = null;
 
-        // Not supported on emulator.
+        var isDuidLoaded = false;
+        var isSystemidLoaded = false;
+
+        var callSuccess = function() {
+            if(isDuidLoaded && isSystemidLoaded) {
+                setTimeout(function() {
+                    success({
+                        cordova: webos.cordovaVersion,
+                        platform: 'tv-webos',
+                        model: modelInfo, // 'WEBOS1'
+                        version: firmwareInfo, // '3.00.00'
+                        uuid: duidInfo, // '095f142a-xxxx-ac5d-xxxx-92c8be18xxxx'
+                        manufacturer: 'LG Webos TV'
+                    });
+                }, 0);
+            }
+        };
+
         /*jshint undef: false */
         webOS.service.request('luna://com.webos.service.sm', {
             method: 'deviceid/getIDs',
@@ -32,8 +49,14 @@ module.exports = {
             },
             onSuccess: function (inResponse) {
                 duidInfo = inResponse.idList[0].idValue;
+                isDuidLoaded = true;
+                callSuccess();
+
             },
             onFailure: function (inError) {
+                setTimeout(function() {
+                    error(new Error(inError.errorText));
+                }, 0);
             }
         });
 
@@ -49,17 +72,13 @@ module.exports = {
                     modelInfo = inResponse.modelName;
                     firmwareInfo = inResponse.firmwareVersion;
                 }
-
-                setTimeout(function() {
-                    success({
-                        cordova: webos.cordovaVersion,
-                        platform: 'tv-webos',
-                        model: modelInfo, // 'WEBOS1'
-                        version: firmwareInfo, // '3.00.00'
-                        uuid: duidInfo, // '095f142a-xxxx-ac5d-xxxx-92c8be18xxxx'
-                        manufacturer: 'LG Webos TV'
-                    });
-                }, 0);
+                else {
+                    setTimeout(function() {
+                        error(new Error(inResponse.errorText));
+                    }, 0);
+                }
+                isSystemidLoaded = true;
+                callSuccess();
             }
         });
     }
