@@ -28,51 +28,63 @@ var WebosConnectionState = {
     ONLINE: 'connected'
 };
 
-function parseNetworkState(data) {
+function getNetworkType(data) {
+    var activeType = '';
+    var networkType = '';
+
+    // Parsing valid value from webos connection status json data.
     if(data.wired.state == WebosConnectionState.ONLINE) {
-        return WebosActiveConnectionType.WIRED;
+        activeType = WebosActiveConnectionType.WIRED;
     }
     else if (data.wifi.state == WebosConnectionState.ONLINE) {
-        return WebosActiveConnectionType.WIFI;
+        activeType = WebosActiveConnectionType.WIFI;
     }
     else if((data.wan.state == WebosConnectionState.ONLINE) || (data.wifiDirect.state == WebosConnectionState.ONLINE)) {
-        return WebosActiveConnectionType.UNKNOWN;
+        activeType = WebosActiveConnectionType.UNKNOWN;
     }
-    return WebosActiveConnectionType.NONE;
+    else {
+        activeType = WebosActiveConnectionType.NONE;
+    }
+
+    // Find current networkType
+    switch(activeType) {
+        case WebosActiveConnectionType.NONE:
+            console.log('network disconnected');
+            networkType = Connection.NONE;
+            break;
+        case WebosActiveConnectionType.WIFI:
+            console.log('connection network type is WIFI');
+            networkType = Connection.WIFI;
+            break;
+        case WebosActiveConnectionType.WIRED:
+            console.log('connection network type is Ethernet');
+            networkType = Connection.ETHERNET;
+            break;
+        default:
+            console.log('connection network type is Unknown');
+            networkType = Connection.UNKNOWN;
+            break;
+    }
+
+    return networkType;
 }
 
-var isFirstTime = false;
-var networkType = '';
+var isFirstAddedEvent = true;
 
 window.addEventListener('online', function (e) {
-    if(isFirstTime === false) {
+    if(isFirstAddedEvent === true) {
+
+        // As async to sync, stop 'online' event by force using 'stopImmediatePropagation' until receiving 'getStatus' result from webos.
         e.stopImmediatePropagation();
         /*jshint undef: false */
         webOS.service.request('luna://com.palm.connectionmanager', {
             method: 'getStatus',
             onSuccess: function (data) {
-                var activeType = parseNetworkState(data);
-                switch(activeType) {
-                case WebosActiveConnectionType.NONE:
-                    console.log('network disconnected');
-                    networkType = Connection.NONE;
-                    break;
-                case WebosActiveConnectionType.WIFI:
-                    console.log('connection network type is Wifi');
-                    networkType = Connection.WIFI;
-                    break;
-                case WebosActiveConnectionType.WIRED:
-                    console.log('connection network type is Ethernet');
-                    networkType = Connection.ETHERNET;
-                    break;
-                default:
-                    console.log('connection network type is Unknown');
-                    networkType = Connection.UNKNOWN;
-                    break;
-                }
                 if(navigator.connection) {
-                    navigator.connection.type = networkType;
-                    isFirstTime = true;
+                    navigator.connection.type = getNetworkType(data);
+                    isFirstAddedEvent = false;
+
+                    // Restart 'online' event after receiving valid data from webos.
                     var networkEvent = document.createEvent('Event');
                     networkEvent.initEvent('online', true, true);
                     window.dispatchEvent(networkEvent);
@@ -84,15 +96,13 @@ window.addEventListener('online', function (e) {
         });
     }
     else {
-        isFirstTime = false;
+        isFirstAddedEvent = true;
     }
 });
 
 window.addEventListener('offline', function () {
-    networkType = Connection.NONE;
-
     if(navigator.connection) {
-        navigator.connection.type = networkType;
+        navigator.connection.type = Connection.NONE;
     }
 });
 
@@ -104,26 +114,7 @@ module.exports = {
             webOS.service.request('luna://com.palm.connectionmanager', {
                 method: 'getStatus',
                 onSuccess: function (data) {
-                    var activeType = parseNetworkState(data);
-                    switch(activeType) {
-                    case WebosActiveConnectionType.NONE:
-                        console.log('network disconnected');
-                        networkType = Connection.NONE;
-                        break;
-                    case WebosActiveConnectionType.WIFI:
-                        console.log('connection network type is Wifi');
-                        networkType = Connection.WIFI;
-                        break;
-                    case WebosActiveConnectionType.WIRED:
-                        console.log('connection network type is Ethernet');
-                        networkType = Connection.ETHERNET;
-                        break;
-                    default:
-                        console.log('connection network type is Unknown');
-                        networkType = Connection.UNKNOWN;
-                        break;
-                    }
-
+                    networkType = getNetworkType(data);
                     setTimeout(function() {
                         successCallback(networkType);
                     }, 0);

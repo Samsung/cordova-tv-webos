@@ -43,7 +43,10 @@ module.exports = {
                 },
                 onSuccess: function (data) {
                     var countryString = data.settings.country;
+
+                    // For webos emulator, default other.
                     var countryCode = 'other';
+
                     if(typeof countryString === 'string') {
                         countryCode = countryString;
                     }
