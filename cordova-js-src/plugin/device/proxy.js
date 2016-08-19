@@ -63,7 +63,7 @@ module.exports = {
         webOS.service.request('luna://com.webos.service.tv.systemproperty', {
             method: 'getSystemInfo',
             parameters: {
-                'keys': ['modelName', 'firmwareVersion', 'UHD', 'sdkVersion']
+                'keys': ['modelName', 'firmwareVersion']
             },
             onComplete: function (inResponse) {
                 var isSucceeded = inResponse.returnValue;
