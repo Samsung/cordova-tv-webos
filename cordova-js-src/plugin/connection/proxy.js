@@ -33,13 +33,13 @@ function getNetworkType(data) {
     var networkType = '';
 
     // Parsing valid value from webos connection status json data.
-    if(data.wired.state == WebosConnectionState.ONLINE) {
+    if(data.wired && data.wired.state && (data.wired.state == WebosConnectionState.ONLINE)) {
         activeType = WebosActiveConnectionType.WIRED;
     }
-    else if (data.wifi.state == WebosConnectionState.ONLINE) {
+    else if (data.wifi && data.wifi.state && (data.wifi.state == WebosConnectionState.ONLINE)) {
         activeType = WebosActiveConnectionType.WIFI;
     }
-    else if((data.wan.state == WebosConnectionState.ONLINE) || (data.wifiDirect.state == WebosConnectionState.ONLINE)) {
+    else if((data.wan && data.wan.state && (data.wan.state == WebosConnectionState.ONLINE)) || (data.wifiDirect && data.wifiDirect.state && (data.wifiDirect.state == WebosConnectionState.ONLINE))) {
         activeType = WebosActiveConnectionType.UNKNOWN;
     }
     else {
