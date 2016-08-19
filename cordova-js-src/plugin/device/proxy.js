@@ -17,7 +17,7 @@
 var webos = require('cordova/platform');
 
 module.exports = {
-    getDeviceInfo: function(success, error) {
+    getDeviceInfo: function(successCallback, errorCallback) {
 
         var modelInfo = null;
         var firmwareInfo = null;
@@ -29,7 +29,7 @@ module.exports = {
         var callSuccess = function() {
             if(isDuidLoaded && isSystemidLoaded) {
                 setTimeout(function() {
-                    success({
+                    successCallback({
                         cordova: webos.cordovaVersion,
                         platform: 'tv-webos',
                         model: modelInfo, // 'WEBOS1'
@@ -54,9 +54,8 @@ module.exports = {
 
             },
             onFailure: function (inError) {
-                setTimeout(function() {
-                    error(new Error(inError.errorText));
-                }, 0);
+                isDuidLoaded = true;
+                callSuccess();
             }
         });
 
@@ -71,11 +70,6 @@ module.exports = {
                 if (isSucceeded) {
                     modelInfo = inResponse.modelName;
                     firmwareInfo = inResponse.firmwareVersion;
-                }
-                else {
-                    setTimeout(function() {
-                        error(new Error(inResponse.errorText));
-                    }, 0);
                 }
                 isSystemidLoaded = true;
                 callSuccess();
