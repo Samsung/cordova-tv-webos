@@ -1,6 +1,6 @@
 {
   "name": "cordova-tv-webos",
-  "version": "0.1.0",
+  "version": "1.2.0",
   "description": "Cordova library for supporting WebOS TV Platform",
   "author": "Samsung Electronics",
   "devDependencies": {
