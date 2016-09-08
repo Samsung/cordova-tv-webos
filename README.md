@@ -5,7 +5,7 @@
 Cordova based applications are, at the core, applications written with web technology: HTML, CSS and JavaScript.
 
 # Supported Platform
-* LG WebOS TV
+* WebOS LG Smart TV (tv-webos)
 
 # Project Structure
 ```
