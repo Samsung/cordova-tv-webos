@@ -19,19 +19,17 @@ var elInput;
 function isActiveInputTag() {
     if(document.activeElement && document.activeElement.tagName.toUpperCase() === 'INPUT' &&
         (document.activeElement.type === 'text' || document.activeElement.type === 'password' || document.activeElement.type === 'number')) {
-            return true;
+        return true;
     }
     return false;
 }
 
 document.addEventListener('keyboardStateChange', function(e) {
-    if(e.detail.visibility) {
-        if(isActiveInputTag()) {
+    if(isActiveInputTag()) {
+        if(e.detail.visibility) {
             document.activeElement.setAttribute('data-ime-show', 'true');
         }
-    }
-    else {
-        if(isActiveInputTag() && document.activeElement.getAttribute('data-ime-show') == 'true') {
+        else {
             document.activeElement.setAttribute('data-ime-show', 'false');
             document.activeElement.blur();
         }
