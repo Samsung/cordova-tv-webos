@@ -7,6 +7,14 @@ Cordova based applications are, at the core, applications written with web techn
 # Supported Platform
 * WebOS LG Smart TV (tv-webos)
 
+# Supported cordova plugins
+There are 3 cordova plugins which are supported on TOAST
+* cordova-plugin-device
+* cordova-plugin-globalization
+* cordova-plugin-network-information
+
+If you want more details, please refer [Supported Cordova Plugin](https://github.com/Samsung/cordova-plugin-toast/wiki/supported-cordova-plugin)
+
 # Project Structure
 ```
     ./
