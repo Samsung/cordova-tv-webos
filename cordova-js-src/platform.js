@@ -38,7 +38,7 @@ module.exports = {
         var head = document.getElementsByTagName('head')[0];
         var script = document.createElement('script');
         script.type = 'text/javascript';
-        script.src = 'webOSjs-0.1.0/webOS.js';
+        script.src = 'webOSTVjs-1.0.0/webOSTV.js';
         script.onload = function() {
             channel.onNativeReady.fire();
             require('cordova/plugin/ime-via-input');
